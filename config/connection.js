@@ -1,17 +1,15 @@
 const mysql = require('mysql2');
-
-//require('dotenv').config(); if time come back to protect passwords
-
-
+require('dotenv').config();
 
 const db = mysql.createConnection (
+    process.env.DB_NAME,
+    process.env.DB_USER,
+    process.env.DB_PASSWORD,
     {
         host: 'localhost',
-        user: 'root',
-        password: 'RamRam!6',
-        database: 'employee_tracker_db'
-    },
-    console.log('Connected to employee_tracker_db')
+        dialect: 'mysql',
+        port: 3306
+    }
 );
 
 module.exports = db;
