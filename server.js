@@ -1,7 +1,9 @@
 const inquirer = require('inquirer');
 const db = require('./config/connection');
 
+
 db.connect(err => {
+    if (err) throw err;
     console.log('Database connected.');
     tracker();
 })
@@ -61,8 +63,8 @@ const tracker = () => {
                             console.log('Please add department');
                             return false;
                         }
-                     }
-                    
+                    }
+
                 }]).then((response) => {
                     db.query(`INSERT INTO department (name) VALUES (?)`, [response.department], (err, result) => {
                         if (err) throw err;
@@ -71,4 +73,5 @@ const tracker = () => {
                     })
                 })
             }
-        })};
+        })
+};
