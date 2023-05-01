@@ -148,6 +148,20 @@ const tracker = () => {
                                 }
                             },
                             {
+                                type: 'input',
+                                name: 'lastName',
+                                message: 'New employees last name?',
+                                validate: lastNameInput => {
+                                    if (lastNameInput) {
+                                        return true;
+                                    } else {
+                                        console.log('Add last name');
+                                        return false;
+                                    }
+                                }
+                            },
+
+                            {
                                 type: 'list',
                                 name: 'role',
                                 message: 'New employee role',
@@ -163,13 +177,13 @@ const tracker = () => {
                             {
                                 type: 'input',
                                 name: 'manager',
-                                message: 'New employee manager',
+                                message: 'New employee manager id',
                                 validate: managerInput => {
                                     if (managerInput) {
                                         return true;
 
                                     } else {
-                                        console.log('Add a manager');
+                                        console.log('Add a manager id');
                                         return false;
                                     }
                                 }
@@ -187,6 +201,7 @@ const tracker = () => {
                             });
                         })
                 });
-            }
+            } 
         })
 };
+    
