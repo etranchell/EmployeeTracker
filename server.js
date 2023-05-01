@@ -104,8 +104,89 @@ const tracker = () => {
                                     }
                                 }
                             },
-                        ])
-                })
+                            {
+                                type: 'list',
+                                name: 'department',
+                                message: 'Add new role to which department?',
+                                choices: () => {
+                                    var array = [];
+                                    for (var i = 0; i < result.length; i++) {
+                                        array.push(result[i].name);
+                                    }
+                                    return array;
+                                }
+                            }
+                        ]).then((response) => {
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].name === response.department) {
+                                    var department = result[i];
+                                }
+                            }
+                            db.query(`INSERT INTO role (title, salary, department_id) VALUES (?,?,?)`, [response.role, response.salary, department.id], (err, result) => {
+                                if (err) throw err;
+                                console.log(`Added ${response.role} to the database`)
+                                tracker();
+                            });
+                        })
+                });
+            } else if (response.prompt === 'Add an employee') {
+                db.query(`SELECT * FROM employee, role`, (err, result) => {
+                    if (err) throw err;
+                    inquirer
+                        .prompt([
+                            {
+                                type: 'input',
+                                name: 'firstName',
+                                message: 'New employees first name?',
+                                validate: firstNameInput => {
+                                    if (firstNameInput) {
+                                        return true;
+                                    } else {
+                                        console.log('Add first name');
+                                        return false;
+                                    }
+                                }
+                            },
+                            {
+                                type: 'list',
+                                name: 'role',
+                                message: 'New employee role',
+                                choices: () => {
+                                    var array = [];
+                                    for (var i = 0; i < result.length; i++) {
+                                        array.push(result[i].title);
+                                    }
+                                    var newArray = [...new Set(array)];
+                                    return newArray;
+                                }
+                            },
+                            {
+                                type: 'input',
+                                name: 'manager',
+                                message: 'New employee manager',
+                                validate: managerInput => {
+                                    if (managerInput) {
+                                        return true;
+
+                                    } else {
+                                        console.log('Add a manager');
+                                        return false;
+                                    }
+                                }
+                            }
+                        ]).then((response) => {
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].title === response.role) {
+                                    var role = result[i];
+                                }
+                            }
+                            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`, [response.firstName, response.lastName, role.id, response.manager.id], (err, result) => {
+                                if (err) throw err;
+                                console.log(`Added ${response.firstName} ${response.lastName} to database`)
+                                tracker();
+                            });
+                        })
+                });
             }
         })
 };
