@@ -70,7 +70,41 @@ const tracker = () => {
                         if (err) throw err;
                         console.log(`Added ${response.department} to the database.`);
                         tracker();
-                    })
+                    });
+                })
+            } else if (response.prompt === 'Add a role') {
+                db.query(`SELECT * FROM department`, (err, result) => {
+                    if (err) throw err;
+                    inquirer
+                        .prompt([
+                            {
+                                type: 'input',
+                                name: 'role',
+                                message: 'New role name',
+                                validate: roleInput => {
+                                    if (roleInput) {
+                                        return true;
+
+                                    } else {
+                                        console.log('Please add a role');
+                                        return false;
+                                    }
+                                }
+                            },
+                            {
+                                type: 'input',
+                                name: 'salary',
+                                message: 'Salary of new role',
+                                validate: salaryInput => {
+                                    if (salaryInput) {
+                                        return true;
+                                    } else {
+                                        console.log('Add a salary');
+                                        return false;
+                                    }
+                                }
+                            },
+                        ])
                 })
             }
         })
