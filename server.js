@@ -23,9 +23,9 @@ const tracker = () => {
                     'Add a role',
                     'Add an employee',
                     'Update an employee role',
-                    'Delete a department',
-                    'Delete a role',
-                    'Delete an employee',
+                    // 'Delete a department',
+                    // 'Delete a role',
+                    // 'Delete an employee',
                     'Exit',
                 ],
             }
@@ -176,8 +176,16 @@ const tracker = () => {
                             },
                             {
                                 type: 'input',
-                                name: 'manager',
+                                name: 'managerId',
                                 message: 'New employee manager id',
+                                // choices: () => {
+                                //     var array = [];
+                                //     for (var i = 0; i < result.length; i++) {
+                                //         array.push(result[i].title);
+                                //     }
+                                //     var newArray = [...new Set(array)];
+                                //     return newArray;
+                                // }
                                 validate: managerInput => {
                                     if (managerInput) {
                                         return true;
@@ -194,14 +202,68 @@ const tracker = () => {
                                     var role = result[i];
                                 }
                             }
-                            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`, [response.firstName, response.lastName, role.id, response.manager.id], (err, result) => {
+                            db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`, [response.firstName, response.lastName, role.id, response.managerId], (err, result) => {
                                 if (err) throw err;
                                 console.log(`Added ${response.firstName} ${response.lastName} to database`)
                                 tracker();
                             });
                         })
                 });
-            } 
+            } else if (response.prompt === 'Update an employee role') {
+                db.query(`SELECT * FROM employee, role`, (err, result) => {
+                    if (err) throw err;
+
+                    inquirer
+                        .prompt([
+                            {
+                                type: 'list',
+                                name: 'employee',
+                                message: 'Which employees role do you want to update?',
+                                choices: () => {
+                                    var array = [];
+                                    for (var i = 0; i < result.length; i++) {
+                                        array.push(result[i].last_name);
+                                    }
+                                    var employeeArray = [...new Set(array)];
+                                    return employeeArray;
+                                }
+                            },
+                            {
+                                type: 'list',
+                                name: 'role',
+                                message: 'What is their new role?',
+                                choices: () => {
+                                    var array = [];
+                                    for (var i = 0; i < result.length; i++) {
+                                        array.push(result[i].title);
+                                    }
+                                    var newArray = [...new Set(array)];
+                                    return newArray;
+                                }
+                            }
+                        ]).then((response) => {
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].last_name === response.employee) {
+                                    var name = result[i];
+                                }
+                            }
+
+                            for (var i = 0; i < result.length; i++) {
+                                if (result[i].title === response.role) {
+                                    var role = result[i];
+                                }
+                            }
+
+                            db.query(`UPDATE employee SET ? WHERE ?`, [{ role_id: role }, { last_name: name }], (err, result) => {
+                                if (err) throw err;
+                                console.log(`Updated ${response.employee} role to the database.`)
+                                tracker();
+                            });
+                        })
+                });
+            } else if (response.prompt === 'Log Out') {
+                db.end();
+                console.log("Good-Bye!");
+            }
         })
 };
-    
