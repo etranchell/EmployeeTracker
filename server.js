@@ -206,49 +206,50 @@ const tracker = () => {
                     if (err) throw err;
 
                     inquirer
-                        .prompt([
-                            {
-                                type: 'list',
-                                name: 'employee',
-                                message: 'Which employees role do you want to update?',
-                                choices: () => {
-                                    var array = [];
-                                    for (var i = 0; i < result.length; i++) {
-                                        array.push(result[i].last_name);
-                                    }
-                                    var employeeArray = [...new Set(array)];
-                                    return employeeArray;
+                        .prompt([{
+                            type: 'list', name: 'employee', message: 'Which employee\'s role do you want to update?', choices: () => {
+                                var array = [];
+                                for (var i = 0; i < result.length; i++) {
+                                    array.push(result[i].last_name);
                                 }
-                            },
-                            {
-                                type: 'list',
-                                name: 'role',
-                                message: 'What is their new role?',
-                                choices: () => {
-                                    var array = [];
-                                    for (var i = 0; i < result.length; i++) {
-                                        array.push(result[i].title);
-                                    }
-                                    var newArray = [...new Set(array)];
-                                    return newArray;
-                                }
+                                var employeeArray = [...new Set(array)];
+                                return employeeArray;
                             }
+                        },
+                        {
+                            type: 'list',
+                            name: 'role',
+                            message: 'What is their new role?',
+                            choices: () => {
+                                var array = [];
+                                for (var i = 0; i < result.length; i++) {
+                                    array.push(result[i].title);
+                                }
+                                var newArray = [...new Set(array)];
+                                return newArray;
+                            }
+                        }
                         ]).then((response) => {
+                            var selectedEmployee = response.employee;
+                            var selectedRole = response.role;
+                            var employeeId;
+                            var roleId;
+
                             for (var i = 0; i < result.length; i++) {
-                                if (result[i].last_name === response.employee) {
-                                    var name = result[i];
+                                if (result[i].last_name === selectedEmployee) {
+                                    employeeId = result[i].id;
+                                }
+                                if (result[i].title === selectedRole) {
+                                    roleId = result[i].id;
                                 }
                             }
 
-                            for (var i = 0; i < result.length; i++) {
-                                if (result[i].title === response.role) {
-                                    var role = result[i];
+                            db.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [roleId, employeeId], (err, result) => {
+                                if (err) {
+                                    console.error(err);
+                                    return;
                                 }
-                            }
-
-                            db.query(`UPDATE employee SET ? WHERE ?`, [{ role_id: role }, { last_name: name }], (err, result) => {
-                                if (err) throw err;
-                                console.log(`Updated ${response.employee} role to the database.`)
+                                console.log(`Updated ${result.affectedRows} employee role to the database.`);
                                 tracker();
                             });
                         })
