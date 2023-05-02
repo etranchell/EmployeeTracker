@@ -178,14 +178,6 @@ const tracker = () => {
                                 type: 'input',
                                 name: 'managerId',
                                 message: 'New employee manager id',
-                                // choices: () => {
-                                //     var array = [];
-                                //     for (var i = 0; i < result.length; i++) {
-                                //         array.push(result[i].title);
-                                //     }
-                                //     var newArray = [...new Set(array)];
-                                //     return newArray;
-                                // }
                                 validate: managerInput => {
                                     if (managerInput) {
                                         return true;
@@ -261,7 +253,7 @@ const tracker = () => {
                             });
                         })
                 });
-            } else if (response.prompt === 'Log Out') {
+            } else if (response.prompt === 'Exit') {
                 db.end();
                 console.log("Good-Bye!");
             }
